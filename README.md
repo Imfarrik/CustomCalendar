@@ -3,7 +3,7 @@ CustomCalendar Library
 
 > Step 1. Add the JitPack repository to your build file
 
-'''gradle
+```gradle
 
 allprojects {
 		repositories {
@@ -11,7 +11,7 @@ allprojects {
 			maven { url 'https://jitpack.io' }
 		}
 	}
-  '''
+```
   
  > Step 2. Add the dependency
   
