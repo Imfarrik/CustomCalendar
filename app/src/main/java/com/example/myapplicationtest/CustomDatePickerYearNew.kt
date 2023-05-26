@@ -1,6 +1,5 @@
-package com.imfarrik.customdatepicker
+package com.example.myapplicationtest
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
@@ -15,7 +14,7 @@ import com.imfarrik.customdatepicker.databinding.CustomNewCalendarBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CustomDatePickerYear
+class CustomDatePickerYearNew
 @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -26,10 +25,7 @@ class CustomDatePickerYear
         const val CUSTOM_GREY = "#a0a0a0"
         const val ALL_WEEKS = 6
         const val ALL_DAYS = 6 * 7
-        const val FIRST_DAY_MONTH = 1
-        const val FIVE_DAYS = 5
-        const val TWO_DAYS = 2
-        const val THREE_DAYS = 3
+        const val LAST_MONTH = 11
     }
 
     private var calendar = Calendar.getInstance()
@@ -43,6 +39,8 @@ class CustomDatePickerYear
     private var mListener: DayClickListener? = null
 
     private var selectedDayButton: Button? = null
+
+    private var isFirstClick = true
 
     private var currentDateDay = 0
     private var chosenDateDay = 0
@@ -79,11 +77,7 @@ class CustomDatePickerYear
 
         addDaysInCalendar(defaultButtonParams, context)
 
-        initCalendarWithDate(
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
+        initCalendarWithDate(chosenDateYear, chosenDateMonth, chosenDateDay)
 
         binding.next.setOnClickListener {
             getNextMonth()
@@ -96,7 +90,6 @@ class CustomDatePickerYear
     }
 
     private fun getPreMonth() {
-
         calendar.add(Calendar.MONTH, -1)
 
         binding.currentDate.text =
@@ -111,8 +104,12 @@ class CustomDatePickerYear
     }
 
     private fun getNextMonth() {
-
-        calendar.add(Calendar.MONTH, +1)
+        if (isFirstClick) {
+            isFirstClick = false
+            calendar.add(Calendar.MONTH, +2)
+        } else {
+            calendar.add(Calendar.MONTH, +1)
+        }
 
         binding.currentDate.text =
             "${calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())},"
@@ -176,7 +173,7 @@ class CustomDatePickerYear
         chosenDateMonth = month
         chosenDateDay = day
 
-        calendar.set(year, month, FIRST_DAY_MONTH)
+        calendar.set(year, month, 1)
 
         val firstDayOfCurrentMonth = calendar.get(Calendar.DAY_OF_WEEK)
 
@@ -184,46 +181,51 @@ class CustomDatePickerYear
         val daysLeftInFirstWeek: Int
         val indexOfDayAfterLastDayOfMonth: Int
 
-        if (firstDayOfCurrentMonth == Calendar.SUNDAY) {
-            daysLeftInFirstWeek = firstDayOfCurrentMonth + FIVE_DAYS
+        if (firstDayOfCurrentMonth == 1) {
+            daysLeftInFirstWeek = firstDayOfCurrentMonth + 5
             indexOfDayAfterLastDayOfMonth = daysLeftInFirstWeek + daysInCurrentMonth
 
-            for (i in firstDayOfCurrentMonth + FIVE_DAYS..daysInCurrentMonth + FIVE_DAYS) {
+            for (i in firstDayOfCurrentMonth + 5..daysInCurrentMonth + 5) {
                 if (currentDateMonth == chosenDateMonth && currentDateYear == chosenDateYear && dayNumber == currentDateDay) {
                     days[i]!!.setTextColor(Color.RED)
                 } else {
-                    days[i]!!.apply {
-                        setTextColor(Color.BLACK)
-                        setBackgroundColor(Color.TRANSPARENT)
-                    }
+                    days[i]!!.setTextColor(Color.BLACK)
+                    days[i]!!.setBackgroundColor(Color.TRANSPARENT)
                 }
-                val dateArr = listOf(dayNumber, chosenDateMonth, chosenDateYear)
-                days[i]!!.apply {
-                    tag = dateArr
-                    text = dayNumber.toString()
-                    setOnClickListener { onDayClick(it) }
+                val dateArr = IntArray(3)
+                dateArr[0] = dayNumber
+                dateArr[1] = chosenDateMonth
+                dateArr[2] = chosenDateYear
+                days[i]!!.tag = dateArr
+                days[i]!!.text = dayNumber.toString()
+                days[i]!!.setOnClickListener { view: View? ->
+                    onDayClick(
+                        view!!
+                    )
                 }
-
                 ++dayNumber
             }
 
         } else {
-            daysLeftInFirstWeek = firstDayOfCurrentMonth - TWO_DAYS
+            daysLeftInFirstWeek = firstDayOfCurrentMonth - 2
             indexOfDayAfterLastDayOfMonth = daysLeftInFirstWeek + daysInCurrentMonth
-            for (i in firstDayOfCurrentMonth - TWO_DAYS..daysInCurrentMonth + (firstDayOfCurrentMonth - THREE_DAYS)) {
+            for (i in firstDayOfCurrentMonth - 2..daysInCurrentMonth + (firstDayOfCurrentMonth - 3)) {
                 if (currentDateMonth == chosenDateMonth && currentDateYear == chosenDateYear && dayNumber == currentDateDay) {
                     days[i]!!.setTextColor(Color.RED)
                 } else {
-                    days[i]!!.apply {
-                        setTextColor(Color.BLACK)
-                        setBackgroundColor(Color.TRANSPARENT)
-                    }
+                    days[i]!!.setTextColor(Color.BLACK)
+                    days[i]!!.setBackgroundColor(Color.TRANSPARENT)
                 }
-                val dateArr = listOf(dayNumber, chosenDateMonth, chosenDateYear)
-                days[i]!!.apply {
-                    tag = dateArr
-                    text = dayNumber.toString()
-                    setOnClickListener { onDayClick(it) }
+                val dateArr = IntArray(3)
+                dateArr[0] = dayNumber
+                dateArr[1] = chosenDateMonth
+                dateArr[2] = chosenDateYear
+                days[i]!!.tag = dateArr
+                days[i]!!.text = dayNumber.toString()
+                days[i]!!.setOnClickListener { view: View? ->
+                    onDayClick(
+                        view!!
+                    )
                 }
                 ++dayNumber
             }
@@ -234,11 +236,29 @@ class CustomDatePickerYear
         } else {
             calendar.set(year - 1, 11, 1)
         }
-
         var daysInPreviousMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
 
         for (i in daysLeftInFirstWeek - 1 downTo 0) {
+//            val dateArr = IntArray(3)
+//            if (chosenDateMonth > 0) {
+//                if (currentDateMonth != chosenDateMonth - 1 || currentDateYear != chosenDateYear || daysInPreviousMonth != currentDateDay) {
+//                    days[i]!!.setBackgroundColor(Color.TRANSPARENT)
+//                }
+//                val listOfInt = listOf(daysInPreviousMonth, chosenDateMonth - 1, chosenDateYear)
+//                for (j in dateArr.indices) {
+//                    dateArr[j] = listOfInt[j]
+//                }
+//            } else {
+//                if (currentDateMonth != LAST_MONTH || currentDateYear != chosenDateYear - 1 || daysInPreviousMonth != currentDateDay) {
+//                    days[i]!!.setBackgroundColor(Color.TRANSPARENT)
+//                }
+//                val listOfInt = listOf(daysInPreviousMonth, LAST_MONTH, chosenDateYear - 1)
+//                for (j in dateArr.indices) {
+//                    dateArr[j] = listOfInt[j]
+//                }
+//            }
             days[i]!!.apply {
+//                tag = dateArr
                 setTextColor(Color.parseColor(CUSTOM_GREY))
                 text = daysInPreviousMonth--.toString()
                 setOnClickListener { getPreMonth() }
@@ -246,17 +266,34 @@ class CustomDatePickerYear
         }
 
         var nextMonthDaysCounter = 1
-
         for (i in indexOfDayAfterLastDayOfMonth until days.size) {
-            days[i]!!.apply {
-                setTextColor(Color.parseColor(CUSTOM_GREY))
-                text = nextMonthDaysCounter++.toString()
-                setOnClickListener { getNextMonth() }
+            val dateArr = IntArray(3)
+            if (chosenDateMonth < 11) {
+                if (currentDateMonth == chosenDateMonth + 1 && currentDateYear == chosenDateYear && nextMonthDaysCounter == currentDateDay) {
+                    days[i]!!.setBackgroundResource(R.drawable.btn_bg)
+                } else {
+                    days[i]!!.setBackgroundColor(Color.TRANSPARENT)
+                }
+                dateArr[0] = nextMonthDaysCounter
+                dateArr[1] = chosenDateMonth + 1
+                dateArr[2] = chosenDateYear
+            } else {
+                if (currentDateMonth == 0 && currentDateYear == chosenDateYear + 1 && nextMonthDaysCounter == currentDateDay) {
+                    days[i]!!.setBackgroundResource(R.drawable.btn_bg)
+                } else {
+                    days[i]!!.setBackgroundColor(Color.TRANSPARENT)
+                }
+                dateArr[0] = nextMonthDaysCounter
+                dateArr[1] = 0
+                dateArr[2] = chosenDateYear + 1
             }
-
+            days[i]!!.tag = dateArr
+            days[i]!!.setTextColor(Color.parseColor(CUSTOM_GREY))
+            days[i]!!.text = nextMonthDaysCounter++.toString()
+            days[i]!!.setOnClickListener { getNextMonth() }
         }
 
-        calendar.set(chosenDateYear, chosenDateMonth, chosenDateDay)
+        calendar[chosenDateYear, chosenDateMonth] = chosenDateDay
 
     }
 
@@ -268,7 +305,6 @@ class CustomDatePickerYear
         return outputFormat.format(date!!)
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun onDayClick(view: View) {
         mListener?.onDayClick(view)
         if (selectedDayButton != null) {
@@ -284,7 +320,7 @@ class CustomDatePickerYear
         }
         selectedDayButton = view as Button
         if (selectedDayButton?.tag != null) {
-            val dateArray = selectedDayButton!!.tag as List<Int>
+            val dateArray = selectedDayButton!!.tag as IntArray
             pickedDateDay = dateArray[0]
             pickedDateMonth = dateArray[1] + 1
             pickedDateYear = dateArray[2]
