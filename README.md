@@ -21,6 +21,9 @@ dependencies {
 }
 ```
 
+Screenshots
+========
+
 <img src="app/src/main/assets/img.png" alt="Image Description" width="300" style="margin-right:10px;"> <img src="app/src/main/assets/img_1.png" alt="Image Description" width="300">
 
 Features
