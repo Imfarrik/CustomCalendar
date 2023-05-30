@@ -21,4 +21,4 @@ dependencies {
 }
 ```
 
-![Screenshot](app/src/main/assets/img.png)
+<img src="app/src/main/assets/img.png" alt="Image Description" width="300" style="margin-right:10px;">
