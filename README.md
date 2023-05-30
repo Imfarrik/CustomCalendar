@@ -48,5 +48,4 @@ Features
         dialog.show()
 
     }
-}
 ```
