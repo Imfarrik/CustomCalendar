@@ -17,7 +17,7 @@ allprojects {
 
   ```gradle
 dependencies {
-  	implementation 'com.github.Imfarrik:CustomCalendar:Tag'
+  	implementation 'com.github.Imfarrik:CustomCalendar:1.0.0'
 }
 ```
 
