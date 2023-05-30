@@ -66,7 +66,6 @@
         android:id="@+id/weeks_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:orientation="horizontal"
         android:weightSum="7">
 
@@ -78,7 +77,7 @@
             android:fontFamily="@font/muller_regular"
             android:lines="1"
             android:padding="12dp"
-            android:text="Пн"
+            android:text="Mo"
             android:textColor="#676776"
             android:textSize="13sp"
             android:textStyle="bold" />
@@ -88,12 +87,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
             android:fontFamily="@font/muller_regular"
             android:lines="1"
             android:padding="12dp"
-            android:text="Вт"
-            android:textAllCaps="false"
+            android:text="Tu"
             android:textColor="#676776"
             android:textSize="13sp"
             android:textStyle="bold" />
@@ -103,12 +100,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
             android:fontFamily="@font/muller_regular"
             android:lines="1"
             android:padding="12dp"
-            android:text="Ср"
-            android:textAllCaps="false"
+            android:text="We"
             android:textColor="#676776"
             android:textSize="13sp"
             android:textStyle="bold" />
@@ -118,12 +113,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
             android:fontFamily="@font/muller_regular"
             android:lines="1"
             android:padding="12dp"
-            android:text="Чт"
-            android:textAllCaps="false"
+            android:text="Th"
             android:textColor="#676776"
             android:textSize="13sp"
             android:textStyle="bold" />
@@ -136,7 +129,7 @@
             android:fontFamily="@font/muller_regular"
             android:lines="1"
             android:padding="12dp"
-            android:text="Пт"
+            android:text="Fr"
             android:textColor="#676776"
             android:textSize="13sp"
             android:textStyle="bold" />
@@ -149,7 +142,7 @@
             android:fontFamily="@font/muller_regular"
             android:lines="1"
             android:padding="12dp"
-            android:text="Сб"
+            android:text="Sa"
             android:textColor="#676776"
             android:textSize="13sp"
             android:textStyle="bold" />
@@ -162,7 +155,7 @@
             android:fontFamily="@font/muller_regular"
             android:lines="1"
             android:padding="12dp"
-            android:text="Вс"
+            android:text="Su"
             android:textColor="#676776"
             android:textSize="13sp"
             android:textStyle="bold" />

@@ -66,6 +66,8 @@ class CustomDatePickerYear
 
         addView(binding.root)
 
+        setWeeksName()
+
         currentDateDay = calendar.get(Calendar.DAY_OF_MONTH)
 
         chosenDateMonth = calendar[Calendar.MONTH]
@@ -80,8 +82,6 @@ class CustomDatePickerYear
         initializeDaysWeeks()
 
         defaultButtonParams = userButtonParams ?: getDaysLayoutParams()
-
-        setWeeksName()
 
         addDaysInCalendar(defaultButtonParams, context)
 
@@ -118,12 +118,23 @@ class CustomDatePickerYear
 
             if (i > 1) {
                 val week = listOfWeeks[i - 2]
-                week.text =
-                    shortWeekdays[i].capitalize()
+                if (shortWeekdays[i].length > 2) {
+                    week.text =
+                        shortWeekdays[i].dropLast(1)
+                } else {
+                    week.text =
+                        shortWeekdays[i].capitalize()
+                }
+
             } else {
                 val week = listOfWeeks.last()
-                week.text =
-                    shortWeekdays[1].capitalize()
+                if (shortWeekdays[1].length > 2) {
+                    week.text =
+                        shortWeekdays[1].dropLast(1)
+                } else {
+                    week.text =
+                        shortWeekdays[1].capitalize()
+                }
             }
 
         }

@@ -1,4 +1,5 @@
 # CustomCalendar
+
 CustomCalendar Library
 
 > Step 1. Add the JitPack repository to your build file
@@ -11,11 +12,13 @@ allprojects {
 	}
 }
 ```
-  
- > Step 2. Add the dependency
- 
+
+> Step 2. Add the dependency
+
   ```gradle
 dependencies {
   	implementation 'com.github.Imfarrik:CustomCalendar:Tag'
 }
 ```
+
+![Screenshot](app/src/main/assets/img.png)
