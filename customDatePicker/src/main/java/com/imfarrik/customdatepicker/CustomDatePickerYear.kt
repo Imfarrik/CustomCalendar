@@ -1,17 +1,18 @@
 package com.imfarrik.customdatepicker
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import com.imfarrik.customdatepicker.databinding.CustomNewCalendarBinding
+import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -30,19 +31,22 @@ class CustomDatePickerYear
         const val FIVE_DAYS = 5
         const val TWO_DAYS = 2
         const val THREE_DAYS = 3
+        const val DAY = "day"
+        const val MONTH = "month"
+        const val YEAR = "year"
     }
 
     private var calendar = Calendar.getInstance()
 
     private var weeks: Array<LinearLayout?> = arrayOfNulls(ALL_WEEKS)
-    private var days: Array<Button?> = arrayOfNulls(ALL_DAYS)
+    private var days: Array<TextView?> = arrayOfNulls(ALL_DAYS)
 
     private val defaultButtonParams: LayoutParams?
     private var userButtonParams: LayoutParams? = null
 
     private var mListener: DayClickListener? = null
 
-    private var selectedDayButton: Button? = null
+    private var selectedDayButton: TextView? = null
 
     private var currentDateDay = 0
     private var chosenDateDay = 0
@@ -77,6 +81,8 @@ class CustomDatePickerYear
 
         defaultButtonParams = userButtonParams ?: getDaysLayoutParams()
 
+        setWeeksName()
+
         addDaysInCalendar(defaultButtonParams, context)
 
         initCalendarWithDate(
@@ -95,12 +101,43 @@ class CustomDatePickerYear
 
     }
 
+    private fun setWeeksName() {
+        val listOfWeeks = listOf(
+            binding.button5,
+            binding.button4,
+            binding.button10,
+            binding.button9,
+            binding.button8,
+            binding.button7,
+            binding.button6,
+        )
+        val locale = Locale.getDefault()
+        val dateFormatSymbols = DateFormatSymbols.getInstance(locale)
+        val shortWeekdays = dateFormatSymbols.shortWeekdays
+        for (i in 1 until shortWeekdays.size) {
+
+            if (i > 1) {
+                val week = listOfWeeks[i - 2]
+                week.text =
+                    shortWeekdays[i].capitalize()
+            } else {
+                val week = listOfWeeks.last()
+                week.text =
+                    shortWeekdays[1].capitalize()
+            }
+
+        }
+    }
+
     private fun getPreMonth() {
 
         calendar.add(Calendar.MONTH, -1)
 
-        binding.currentDate.text =
-            "${calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())},"
+        binding.currentDate.text = formatDate(
+            "${calendar.get(Calendar.DATE)}-${calendar.get(Calendar.MONTH) + 1}-${
+                calendar.get(Calendar.YEAR)
+            }"
+        )
         binding.currentMonth.text = calendar.get(Calendar.YEAR).toString()
 
         initCalendarWithDate(
@@ -114,8 +151,11 @@ class CustomDatePickerYear
 
         calendar.add(Calendar.MONTH, +1)
 
-        binding.currentDate.text =
-            "${calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault())},"
+        binding.currentDate.text = formatDate(
+            "${calendar.get(Calendar.DATE)}-${calendar.get(Calendar.MONTH) + 1}-${
+                calendar.get(Calendar.YEAR)
+            }"
+        )
         binding.currentMonth.text = calendar.get(Calendar.YEAR).toString()
 
         initCalendarWithDate(
@@ -141,11 +181,18 @@ class CustomDatePickerYear
 
     private fun getDaysLayoutParams(): LayoutParams {
         val buttonParams = LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
         )
         buttonParams.weight = 1f
         return buttonParams
+    }
+
+    private fun getTextLayoutParams(): LayoutParams {
+        return LayoutParams(
+            dpToPx(context, 32f),
+            dpToPx(context, 32f)
+        )
     }
 
     private fun addDaysInCalendar(
@@ -154,18 +201,28 @@ class CustomDatePickerYear
         var engDaysArrayCounter = 0
         for (weekNumber in 0..5) {
             for (dayInWeek in 0..6) {
-                val day = Button(context)
+                val day = TextView(context)
+                val dayContainer = LinearLayout(context)
+                dayContainer.layoutParams = buttonParams
+                dayContainer.gravity = Gravity.CENTER
                 day.setTextColor(Color.parseColor(CUSTOM_GREY))
                 day.setBackgroundColor(Color.TRANSPARENT)
-                day.layoutParams = buttonParams
+                day.layoutParams = getTextLayoutParams()
+                day.gravity = Gravity.CENTER
                 day.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
                 day.typeface = ResourcesCompat.getFont(context, R.font.muller_regular)
                 day.setSingleLine()
                 days[engDaysArrayCounter] = day
-                weeks[weekNumber]!!.addView(day)
+                dayContainer.addView(day)
+                weeks[weekNumber]!!.addView(dayContainer)
                 ++engDaysArrayCounter
             }
         }
+    }
+
+    private fun dpToPx(context: Context, dp: Float): Int {
+        val density = context.resources.displayMetrics.density
+        return (dp * density).toInt()
     }
 
     private fun initCalendarWithDate(year: Int, month: Int, day: Int) {
@@ -197,7 +254,10 @@ class CustomDatePickerYear
                         setBackgroundColor(Color.TRANSPARENT)
                     }
                 }
-                val dateArr = listOf(dayNumber, chosenDateMonth, chosenDateYear)
+                val dateArr = mapOf(
+                    DAY to dayNumber,
+                    MONTH to chosenDateMonth + 1, YEAR to chosenDateYear
+                )
                 days[i]!!.apply {
                     tag = dateArr
                     text = dayNumber.toString()
@@ -219,7 +279,10 @@ class CustomDatePickerYear
                         setBackgroundColor(Color.TRANSPARENT)
                     }
                 }
-                val dateArr = listOf(dayNumber, chosenDateMonth, chosenDateYear)
+                val dateArr = mapOf(
+                    DAY to dayNumber, MONTH to chosenDateMonth + 1,
+                    YEAR to chosenDateYear
+                )
                 days[i]!!.apply {
                     tag = dateArr
                     text = dayNumber.toString()
@@ -262,10 +325,10 @@ class CustomDatePickerYear
 
     private fun formatDate(inputDate: String): String {
         val inputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("dd MMMM,", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("LLLL,", Locale.getDefault())
 
         val date = inputFormat.parse(inputDate)
-        return outputFormat.format(date!!)
+        return outputFormat.format(date!!).capitalize()
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -282,12 +345,13 @@ class CustomDatePickerYear
                 }
             }
         }
-        selectedDayButton = view as Button
+        selectedDayButton = view as TextView
         if (selectedDayButton?.tag != null) {
-            val dateArray = selectedDayButton!!.tag as List<Int>
-            pickedDateDay = dateArray[0]
-            pickedDateMonth = dateArray[1] + 1
-            pickedDateYear = dateArray[2]
+            val dateArray = selectedDayButton!!.tag as Map<String, Int>
+
+            pickedDateDay = dateArray[DAY]!!
+            pickedDateMonth = dateArray[MONTH]!!
+            pickedDateYear = dateArray[YEAR]!!
             fullDate = "$pickedDateDay-$pickedDateMonth-$pickedDateYear"
             binding.currentDate.text = formatDate(fullDate)
         }
@@ -299,5 +363,8 @@ class CustomDatePickerYear
         fun onDayClick(view: View?)
     }
 
+    private fun String.capitalize(): String {
+        return this.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+    }
 
 }

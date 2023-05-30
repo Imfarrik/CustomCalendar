@@ -14,7 +14,7 @@ import com.imfarrik.customdatepicker.databinding.CustomNewCalendarBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CustomDatePickerYearNew
+class CustomDatePickerYear
 @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -23,15 +23,12 @@ class CustomDatePickerYearNew
 
     private companion object {
         const val CUSTOM_GREY = "#a0a0a0"
-        const val ALL_WEEKS = 6
-        const val ALL_DAYS = 6 * 7
-        const val LAST_MONTH = 11
     }
 
     private var calendar = Calendar.getInstance()
 
-    private var weeks: Array<LinearLayout?> = arrayOfNulls(ALL_WEEKS)
-    private var days: Array<Button?> = arrayOfNulls(ALL_DAYS)
+    private var weeks: Array<LinearLayout?> = arrayOf()
+    private var days: Array<Button?> = arrayOf()
 
     private val defaultButtonParams: LayoutParams?
     private var userButtonParams: LayoutParams? = null
@@ -107,7 +104,7 @@ class CustomDatePickerYearNew
         if (isFirstClick) {
             isFirstClick = false
             calendar.add(Calendar.MONTH, +2)
-        } else {
+        }else{
             calendar.add(Calendar.MONTH, +1)
         }
 
@@ -123,17 +120,14 @@ class CustomDatePickerYearNew
     }
 
     private fun initializeDaysWeeks() {
-        val listOfWeeks = arrayOf(
-            binding.calendarWeek1,
-            binding.calendarWeek2,
-            binding.calendarWeek3,
-            binding.calendarWeek4,
-            binding.calendarWeek5,
-            binding.calendarWeek6
-        )
-        for (i in listOfWeeks.indices) {
-            weeks[i] = listOfWeeks[i]
-        }
+        weeks = arrayOfNulls(6)
+        days = arrayOfNulls(6 * 7)
+        weeks[0] = binding.calendarWeek1
+        weeks[1] = binding.calendarWeek2
+        weeks[2] = binding.calendarWeek3
+        weeks[3] = binding.calendarWeek4
+        weeks[4] = binding.calendarWeek5
+        weeks[5] = binding.calendarWeek6
     }
 
     private fun getDaysLayoutParams(): LayoutParams {
@@ -174,7 +168,6 @@ class CustomDatePickerYearNew
         chosenDateDay = day
 
         calendar.set(year, month, 1)
-
         val firstDayOfCurrentMonth = calendar.get(Calendar.DAY_OF_WEEK)
 
         var dayNumber = 1
@@ -231,38 +224,30 @@ class CustomDatePickerYearNew
             }
         }
 
-        if (month > 0) {
-            calendar.set(year, month - 1, 1)
-        } else {
-            calendar.set(year - 1, 11, 1)
-        }
+        if (month > 0) calendar[year, month - 1] = 1 else calendar[year - 1, 11] = 1
         var daysInPreviousMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
 
         for (i in daysLeftInFirstWeek - 1 downTo 0) {
-//            val dateArr = IntArray(3)
-//            if (chosenDateMonth > 0) {
-//                if (currentDateMonth != chosenDateMonth - 1 || currentDateYear != chosenDateYear || daysInPreviousMonth != currentDateDay) {
-//                    days[i]!!.setBackgroundColor(Color.TRANSPARENT)
-//                }
-//                val listOfInt = listOf(daysInPreviousMonth, chosenDateMonth - 1, chosenDateYear)
-//                for (j in dateArr.indices) {
-//                    dateArr[j] = listOfInt[j]
-//                }
-//            } else {
-//                if (currentDateMonth != LAST_MONTH || currentDateYear != chosenDateYear - 1 || daysInPreviousMonth != currentDateDay) {
-//                    days[i]!!.setBackgroundColor(Color.TRANSPARENT)
-//                }
-//                val listOfInt = listOf(daysInPreviousMonth, LAST_MONTH, chosenDateYear - 1)
-//                for (j in dateArr.indices) {
-//                    dateArr[j] = listOfInt[j]
-//                }
-//            }
-            days[i]!!.apply {
-//                tag = dateArr
-                setTextColor(Color.parseColor(CUSTOM_GREY))
-                text = daysInPreviousMonth--.toString()
-                setOnClickListener { getPreMonth() }
+            val dateArr = IntArray(3)
+            if (chosenDateMonth > 0) {
+                if (currentDateMonth != chosenDateMonth - 1 || currentDateYear != chosenDateYear || daysInPreviousMonth != currentDateDay) {
+                    days[i]!!.setBackgroundColor(Color.TRANSPARENT)
+                }
+                dateArr[0] = daysInPreviousMonth
+                dateArr[1] = chosenDateMonth - 1
+                dateArr[2] = chosenDateYear
+            } else {
+                if (currentDateMonth != 11 || currentDateYear != chosenDateYear - 1 || daysInPreviousMonth != currentDateDay) {
+                    days[i]!!.setBackgroundColor(Color.TRANSPARENT)
+                }
+                dateArr[0] = daysInPreviousMonth
+                dateArr[1] = 11
+                dateArr[2] = chosenDateYear - 1
             }
+            days[i]!!.tag = dateArr
+            days[i]!!.setTextColor(Color.parseColor(CUSTOM_GREY))
+            days[i]!!.text = daysInPreviousMonth--.toString()
+            days[i]!!.setOnClickListener { getPreMonth() }
         }
 
         var nextMonthDaysCounter = 1
