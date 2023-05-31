@@ -51,5 +51,4 @@ Features
         dialog.show()
 
     }
-}
 ```
